@@ -1,10 +1,12 @@
-from flask import (Blueprint, render_template, redirect)
+from threading import current_thread
+from flask import (Blueprint, render_template, redirect, url_for)
 import os
 import psycopg2
 from app.forms import AppointmentForm
-from datetime import datetime
+from datetime import datetime, timedelta
 
 bp = Blueprint('main', __name__, url_prefix='/')
+daily = Blueprint('daily', __name__, url_prefix='/<year>/<month>/<day>')
 
 CONNECTION_PARAMETERS = {
     "user": os.environ.get("DB_USER"),
@@ -15,8 +17,13 @@ CONNECTION_PARAMETERS = {
 
 @bp.route('/', methods=['GET', 'POST'])
 def main():
-  form = AppointmentForm()
+    d = datetime.now()
+    return redirect(url_for(".daily", year=d.year, month=d.month, day=d.day))
 
+@bp.route("/<int:year>/<int:month>/<int:day>", methods=['GET', 'POST'])
+def daily(year, month, day):
+  form = AppointmentForm()
+  # print(">>>>>>",year,month,day)
   if form.validate_on_submit():
 
     name = form.name.data,
@@ -47,11 +54,17 @@ def main():
 
   with psycopg2.connect(**CONNECTION_PARAMETERS) as conn:
     with conn.cursor() as curs:
+      current_day = datetime(year,month,day)
+
+      print(">>>>", current_day)
+      next_day = current_day + timedelta(days=1)
+      print(">>>>", next_day)
       curs.execute(
         """SELECT id, name, start_datetime, end_datetime
         FROM appointments
+        WHERE start_datetime BETWEEN (%(current_day)s) AND (%(next_day)s)
         ORDER BY start_datetime;
-        """
+        """, {"current_day": current_day, "next_day": next_day}
       )
       rows = curs.fetchall()
 
