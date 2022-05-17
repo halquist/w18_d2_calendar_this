@@ -4,6 +4,27 @@
     <title></title>
   </head>
   <body>
-    <h1>Calendar Working.</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Start</th>
+          <th>End</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>{{ r[1]}}</td>
+          <td>{{ r[2].strftime("%H:%M")}}</td>
+          <td>{{ r[3].strftime("%H:%M") }}</td>
+        </tr>
+
+        {% endfor %}
+        <!-- loop here to create rows -->
+        <!-- use strftime to format date objects -->
+        <!-- loop here to create rows -->
+      </tbody>
+    </table>
   </body>
 </html>
