@@ -1,2 +1,2 @@
-FLASK_APP=calendar_app
-FLASK_ENV=development
+FLASK_APP=app
+
