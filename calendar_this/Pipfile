@@ -8,6 +8,7 @@ flask = "*"
 psycopg2-binary = "*"
 flask-wtf = "*"
 python-dotenv = "*"
+wtforms = "*"
 
 [dev-packages]
 pylint = "*"
